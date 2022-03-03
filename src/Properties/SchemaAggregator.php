@@ -65,7 +65,7 @@ final class SchemaAggregator
                 && $stmt->expr instanceof PhpParser\Node\Expr\StaticCall
                 && ($stmt->expr->class instanceof PhpParser\Node\Name)
                 && $stmt->expr->name instanceof PhpParser\Node\Identifier
-                && ($stmt->expr->class->toCodeString() === '\Illuminate\Support\Facades\Schema' || $stmt->expr->class->toCodeString() === '\Schema')
+                && ($stmt->expr->class->toCodeString() === '\Illuminate\Support\Facades\Schema' || $stmt->expr->class->toCodeString() === '\Schema' || is_subclass_of($stmt->expr->class->toCodeString(), '\Illuminate\Support\Facades\Schema'))
             ) {
                 switch ($stmt->expr->name->name) {
                     case 'create':
@@ -107,7 +107,7 @@ final class SchemaAggregator
             || count($call->getArgs()[1]->value->params) < 1
             || ($call->getArgs()[1]->value->params[0]->type instanceof PhpParser\Node\Name
                 && $call->getArgs()[1]->value->params[0]->type->toCodeString()
-                !== '\\Illuminate\Database\Schema\Blueprint')
+                !== '\\Illuminate\Database\Schema\Blueprint' && !is_subclass_of($call->getArgs()[1]->value->params[0]->type->toCodeString(), '\\Illuminate\Database\Schema\Blueprint'))
         ) {
             return;
         }
